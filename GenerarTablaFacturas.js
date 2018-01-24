@@ -41,8 +41,9 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 	for(var i=0;i<list.length;i++){
 
 		var elem=list[i].split('.');
-		if(elem.length>=2){//ya estamos en los ficheros
-			total++;
+		//if()
+		if(fs.statSync(rutaAbsoluta+"/"+list[i]).isFile()){
+		//if(elem.length>=2){//ya estamos en los ficheros
 			tartarFicheros(rutaAbsoluta+"/", list, anio, cifTratado);
 		}else{
 			//console.log(profundidad+" "+espacios+"Directorio "+elem);
