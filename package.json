@@ -6,7 +6,8 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "jsonfile": "^4.0.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "xml-query": "^1.4.0"
   },
   "devDependencies": {},
   "scripts": {

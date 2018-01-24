@@ -1,25 +1,26 @@
+// Includes
 var fs = require("fs");
 var _ = require("underscore");
-var inicio = new Date().getTime();
 var jsonfile = require('jsonfile');
-var anio = new Date().getFullYear();
-var anioAnt = anio-1;
-
+var xmlQuery = require('xml-query');
+//Rutas de los ficheros
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
 
-var listaFacturasProcesadas=jsonfile.readFileSync(fileFacturasProcesadas);
+//comenzamos
+//Inicializacion de variables
+
 var tablaForGestDoc="";
-
-//ejemplo para acceder a la fecha de una factura
-//console.log(listaFacturasProcesadas.facturasFace["2017"].cifs["03885536"].factura["FA21"].fechaProcesado);
-
+var inicio = new Date().getTime();
+var anio = new Date().getFullYear();
+var anioAnt = anio-1;
 var profundidad=0; //La profundidad de directorios para llegar a la factura es 4. Año, CIF, Factura y ya el PDF o xsig
 var profundidadCif=2; //numero de directorios hasta llegar al directorio del CIF
 var total=0; //Número de facturas encontradas
 var totalNuevas=0;
 var hoy=getHoy();
+var listaFacturasProcesadas=jsonfile.readFileSync(fileFacturasProcesadas);
 
 /**
  * 
@@ -30,7 +31,6 @@ var hoy=getHoy();
  */
 function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 	var list=fs.readdirSync(rutaAbsoluta);
-
 	profundidad++;
 	if(profundidad==profundidadCif){
 		var elem=rutaAbsoluta.split('/');
@@ -39,16 +39,12 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 	}
 	var fin=false;
 	for(var i=0;i<list.length && !fin;i++){
-
 		var elem=list[i].split('.');
-		//if()
 		if(fs.statSync(rutaAbsoluta+"/"+list[i]).isFile()){
-		//if(elem.length>=2){//ya estamos en los ficheros
 			total++;
 			tartarFicheros(rutaAbsoluta+"/", list, anio, cifTratado);
 			fin = true;
 		}else{
-			//console.log(profundidad+" "+espacios+"Directorio "+elem);
 			leerArbolCompleto(rutaAbsoluta+"/"+elem,espacios+"  ", anio, cifTratado);
 		}
 	}
@@ -59,10 +55,23 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 /** se pretenden registrar todos los ficheros **/
 function tartarFicheros(ruta,dirATratar, anio, cif){
 	if(!facturaProcesada(ruta, anio)){
+		var datos={};
 		dirATratar.forEach(element => {
-			tablaForGestDoc+=cif+";"+";"+element+"\r\n";
+			var ext=element.split(".")[element.split(".").length-1];
+			if(ext=="xsig"){
+				datos=leerDatosXML(ruta+element);
+			}
+		});
+		dirATratar.forEach(element => {
+			tablaForGestDoc+=cif+";"+";"+ruta+element+"\r\n";
 		});
 	}
+}
+
+function leerDatosXML(ruta){
+	var xmlAux=fs.readFileSync(ruta,'utf8');
+	var xml=XmlReader.parseSync(xmlAux);
+	console.log(xml);
 }
 /**
  * Comprueba si la factura ya se procesó. FALSE si la factura no se ha procesado. Tambien
@@ -106,12 +115,14 @@ function getHoy(){
 	return day + '-' + month + '-' + year;
 }
 
+//Comenzamos la lectura de los directorios
 total=0;
 leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
 var total1=totalNuevas;
 totalNuevas=0;
 leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
 var total2=totalNuevas;
+
 console.log("Total ficheros: "+total);
 console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
 console.log("Total ficheros Nuevos "+anio+": "+total2);
