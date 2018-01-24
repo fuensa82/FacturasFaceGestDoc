@@ -106,10 +106,15 @@ function getHoy(){
 	return day + '-' + month + '-' + year;
 }
 
+total=0;
 leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
+var total1=totalNuevas;
+totalNuevas=0;
 leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
+var total2=totalNuevas;
 console.log("Total ficheros: "+total);
-console.log("Total ficheros Nuevos: "+totalNuevas);
+console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
+console.log("Total ficheros Nuevos "+anio+": "+total2);
 //console.log("Tabla GestDoc "+tablaForGestDoc);
 //jsonfile.writeFileSync(file, listaFacturasProcesadas);
 fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
@@ -127,7 +132,5 @@ fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
     };
     console.log("Fichero de procesado creado");
 });
-
-console.log("Program Ended");
 var fin=new Date().getTime();
 console.log("Tiempo total: "+(fin-inicio));
