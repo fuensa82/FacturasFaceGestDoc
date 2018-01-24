@@ -44,6 +44,7 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 		//if()
 		if(fs.statSync(rutaAbsoluta+"/"+list[i]).isFile()){
 		//if(elem.length>=2){//ya estamos en los ficheros
+			total++;
 			tartarFicheros(rutaAbsoluta+"/", list, anio, cifTratado);
 		}else{
 			//console.log(profundidad+" "+espacios+"Directorio "+elem);
@@ -55,7 +56,6 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 }
 /** se pretenden registrar todos los ficheros **/
 function tartarFicheros(ruta,dirATratar, anio, cif){
-	total++;
 	if(!facturaProcesada(ruta, anio)){
 		//var dirATratar=fs.readdirSync(ruta);
 		for(var i=0;i<dirATratar.length;i++){
