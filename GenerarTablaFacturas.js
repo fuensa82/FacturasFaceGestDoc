@@ -1,8 +1,9 @@
 var fs = require("fs");
 var _ = require("underscore");
+var inicio = new Date().getTime();
 var jsonfile = require('jsonfile');
 var anio = new Date().getFullYear();
-var anioAnt = new Date().getFullYear()-1;
+var anioAnt = anio-1;
 
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
@@ -32,13 +33,12 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 
 	profundidad++;
 	if(profundidad==profundidadCif){
-		console.log("Calculando CIF");
 		var elem=rutaAbsoluta.split('/');
 		var cif=elem[elem.length-1];
 		cifTratado=cif;
 	}
-
-	for(var i=0;i<list.length;i++){
+	var fin=false;
+	for(var i=0;i<list.length && !fin;i++){
 
 		var elem=list[i].split('.');
 		//if()
@@ -46,6 +46,7 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 		//if(elem.length>=2){//ya estamos en los ficheros
 			total++;
 			tartarFicheros(rutaAbsoluta+"/", list, anio, cifTratado);
+			fin = true;
 		}else{
 			//console.log(profundidad+" "+espacios+"Directorio "+elem);
 			leerArbolCompleto(rutaAbsoluta+"/"+elem,espacios+"  ", anio, cifTratado);
@@ -54,13 +55,13 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 	profundidad--;
 	return;
 }
+
 /** se pretenden registrar todos los ficheros **/
 function tartarFicheros(ruta,dirATratar, anio, cif){
 	if(!facturaProcesada(ruta, anio)){
-		//var dirATratar=fs.readdirSync(ruta);
-		for(var i=0;i<dirATratar.length;i++){
-			tablaForGestDoc+=cif+";"+";"+dirATratar[i]+"\r\n";
-		}
+		dirATratar.forEach(element => {
+			tablaForGestDoc+=cif+";"+";"+element+"\r\n";
+		});
 	}
 }
 /**
@@ -128,3 +129,5 @@ fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
 });
 
 console.log("Program Ended");
+var fin=new Date().getTime();
+console.log("Tiempo total: "+(fin-inicio));
