@@ -3,6 +3,7 @@ var fs = require("fs");
 var _ = require("underscore");
 var jsonfile = require('jsonfile');
 var xmlQuery = require('xml-query');
+var XmlReader = require('xml-reader');
 //Rutas de los ficheros
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
@@ -20,8 +21,22 @@ var profundidadCif=2; //numero de directorios hasta llegar al directorio del CIF
 var total=0; //Número de facturas encontradas
 var totalNuevas=0;
 var hoy=getHoy();
+var hora=getHoraActual();
 var listaFacturasProcesadas=jsonfile.readFileSync(fileFacturasProcesadas);
 
+/**
+ * Calcula la hora en formato bonito
+ */
+function getHoraActual(){
+	var date = new Date();
+	var hour = date.getHours();
+	hour = (hour < 10 ? "0" : "") + hour;
+	var min  = date.getMinutes();
+	min = (min < 10 ? "0" : "") + min;
+	var sec  = date.getSeconds();
+	sec = (sec < 10 ? "0" : "") + sec;
+	return hour + ":" + min + ":" + sec;
+}
 /**
  * 
  * @param {*} rutaAbsoluta 
@@ -63,15 +78,22 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			}
 		});
 		dirATratar.forEach(element => {
-			tablaForGestDoc+=cif+";"+";"+ruta+element+"\r\n";
+			tablaForGestDoc+=cif+";"
+				+";"+ruta+element+";"+datos.numFactura+";"+datos.fecha+";"+datos.importe+";"+hoy+" "+hora+"\r\n";
 		});
 	}
 }
 
 function leerDatosXML(ruta){
 	var xmlAux=fs.readFileSync(ruta,'utf8');
-	var xml=XmlReader.parseSync(xmlAux);
-	console.log(xml);
+	var xml = XmlReader.parseSync(xmlAux);
+	var datos={
+		"importe":xmlQuery(xml).find("TotalExecutableAmount").find("TotalAmount").text(),
+		"fecha":xmlQuery(xml).find("IssueDate").text(),
+		"numFactura":xmlQuery(xml).find("InvoiceNumber").text()
+	};
+	return datos;
+	
 }
 /**
  * Comprueba si la factura ya se procesó. FALSE si la factura no se ha procesado. Tambien
@@ -85,7 +107,7 @@ function facturaProcesada(ruta, anio){
 		listaFacturasProcesadas.facturasFace[anioN]={};
 	}
 	if(listaFacturasProcesadas.facturasFace[anioN][ruta]==undefined){
-		listaFacturasProcesadas.facturasFace[anioN][ruta]=hoy;
+		listaFacturasProcesadas.facturasFace[anioN][ruta]=hoy+" "+hora;
 		totalNuevas++;
 		return false;
 	}else{

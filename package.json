@@ -5,9 +5,14 @@
   "main": "GenerarTablaFacturas.js",
   "dependencies": {
     "fs": "^0.0.1-security",
+    "jQuery": "^1.7.4",
+    "jsdom": "^11.6.1",
     "jsonfile": "^4.0.0",
     "underscore": "^1.8.3",
-    "xml-query": "^1.4.0"
+    "xml-node": "0.0.1",
+    "xml-query": "^1.4.0",
+    "xml-reader": "^2.4.3",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {},
   "scripts": {
