@@ -4,6 +4,7 @@ var _ = require("underscore");
 var jsonfile = require('jsonfile');
 var xmlQuery = require('xml-query');
 var XmlReader = require('xml-reader');
+
 //Rutas de los ficheros
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
@@ -78,8 +79,14 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			}
 		});
 		dirATratar.forEach(element => {
-			tablaForGestDoc+=cif+";"
-				+";"+ruta+element+";"+datos.numFactura+";"+datos.fecha+";"+datos.importe+";"+hoy+" "+hora+"\r\n";
+			tablaForGestDoc+=
+				cif+";"
+				+";"
+				+ruta+element+";"
+				+datos.numFactura+";"
+				+datos.fecha+";"
+				+datos.importe+";"
+				+hoy+" "+hora+"\r\n";
 		});
 	}
 }
