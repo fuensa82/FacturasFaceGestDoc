@@ -155,8 +155,7 @@ var total2=totalNuevas;
 console.log("Total ficheros: "+total);
 console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
 console.log("Total ficheros Nuevos "+anio+": "+total2);
-//console.log("Tabla GestDoc "+tablaForGestDoc);
-//jsonfile.writeFileSync(file, listaFacturasProcesadas);
+
 fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
     if (err) {
         console.error(err);
