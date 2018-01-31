@@ -9,6 +9,7 @@ var XmlReader = require('xml-reader');
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
+var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopias';
 
 //comenzamos
 //Inicializacion de variables
@@ -76,6 +77,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			var ext=element.split(".")[element.split(".").length-1];
 			if(ext=="xsig"){
 				datos=leerDatosXML(ruta+element);
+				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/FAC_"+hoy+"_"+element);
 			}
 		});
 		dirATratar.forEach(element => {
