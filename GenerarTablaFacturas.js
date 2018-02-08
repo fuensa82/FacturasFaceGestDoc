@@ -9,7 +9,7 @@ var XmlReader = require('xml-reader');
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
-var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopias';
+var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //comenzamos
 //Inicializacion de variables
