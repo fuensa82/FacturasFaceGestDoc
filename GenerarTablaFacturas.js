@@ -80,6 +80,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/FAC_"+hoy+"_"+element);
 				tablaForGestDoc+=
 					cif+";"
+					+";"
 					+ruta+element+";"
 					+"FACTURA POR IMPORTE DE "+tratarImporte(datos.importe)+" Euros;"
 					+hoy+" "+hora+"\r\n";
