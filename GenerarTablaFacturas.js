@@ -78,8 +78,13 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			if(ext=="xsig"){
 				datos=leerDatosXML(ruta+element);
 				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/FAC_"+hoy+"_"+element);
+				tablaForGestDoc+=
+					cif+";"
+					+ruta+element+";"
+					+"FACTURA POR IMPORTE DE "+tratarImporte(datos.importe)+" Euros;"
+					+hoy+" "+hora+"\r\n";
 			}
-		});
+		});/*
 		dirATratar.forEach(element => {
 			tablaForGestDoc+=
 				cif+";"
@@ -89,8 +94,25 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 				+datos.fecha+";"
 				+datos.importe+";"
 				+hoy+" "+hora+"\r\n";
-		});
+		});*/
 	}
+}
+
+/**
+ * La funcion transforma en importe en formato 1234.00 en 1.234,00
+ * @param {Importe de la factura pero en texto, con un punto separando los decimales} importe 
+ */
+function tratarImporte(importe){
+	var imp=importe.split(".");
+	if (imp[0].length>6){
+		imp[0]=imp[0].substring(0,imp[0].length-6)+"."
+			  +imp[0].substring(imp[0].length-6,imp[0].length-3)+"."
+			  +imp[0].substring(imp[0].length-3);
+	}else if(imp[0].length>3){
+		imp[0]=imp[0].substring(0,imp[0].length-3)+"."
+			  +imp[0].substring(imp[0].length-3);
+	}
+	return imp[0]+","+imp[1];
 }
 
 function leerDatosXML(ruta){
