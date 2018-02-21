@@ -69,7 +69,7 @@ function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
 	return;
 }
 
-/** se pretenden registrar todos los ficheros **/
+/** se pretenden registrar solo los xsig **/
 function tartarFicheros(ruta,dirATratar, anio, cif){
 	if(!facturaProcesada(ruta, anio)){
 		var datos={};
@@ -77,7 +77,17 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			var ext=element.split(".")[element.split(".").length-1];
 			if(ext=="xsig"){
 				datos=leerDatosXML(ruta+element);
-				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/FAC_"+hoy+"_"+element);
+				var detalle=fs.statSync(ruta+element);
+				
+				var name=""+detalle.mtime.getFullYear()+
+					rellenarIzq((detalle.mtime.getMonth()+1), 2, "0")+
+					rellenarIzq(detalle.mtime.getDay(), 2, "0")+
+					rellenarIzq(detalle.mtime.getHours(), 2, "0")+
+					rellenarIzq(detalle.mtime.getMinutes(), 2, "0")+
+					rellenarIzq(detalle.mtime.getSeconds(), 2, "0")+
+					rellenarIzq(detalle.mtime.getMilliseconds(), 3, "0");
+
+				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/"+name+"_"+element);
 				tablaForGestDoc+=
 					cif+";"
 					+";"
@@ -98,7 +108,19 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 		});*/
 	}
 }
-
+/**
+ * 
+ * @param {Numero que se quiere rellenar por la izquierda} num 
+ * @param {Cuanto medirá la cadena resultante} longitud 
+ * @param {Caracter con el que se rellenará} relleno 
+ */
+function rellenarIzq(num, longitud, relleno){
+	num=""+num;
+	while(num.length<longitud){
+		num=""+relleno+num;
+	}
+	return num;
+}
 /**
  * La funcion transforma en importe en formato 1234.00 en 1.234,00
  * @param {Importe de la factura pero en texto, con un punto separando los decimales} importe 
@@ -115,7 +137,10 @@ function tratarImporte(importe){
 	}
 	return imp[0]+","+imp[1];
 }
-
+/**
+ * Lee el xsig para sacar los datos de Importe, fecha de la factura y numero de factura
+ * @param {Ruta del archivo XML a leer} ruta 
+ */
 function leerDatosXML(ruta){
 	var xmlAux=fs.readFileSync(ruta,'utf8');
 	var xml = XmlReader.parseSync(xmlAux);
