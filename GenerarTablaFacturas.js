@@ -9,7 +9,7 @@ var XmlReader = require('xml-reader');
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
-var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
+ var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
 var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //comenzamos
@@ -222,14 +222,13 @@ fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
     };
     console.log("Fichero de procesado creado");
 });
-if(!fileFacturasGestDocGIA){
-	fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
-		if (err) {
-			console.error(err);
-			return;
-		};
-		console.log("Fichero GIA de procesado creado");
-	});
-}
+
+fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
+	if (err) {
+		console.error(err);
+		return;
+	};
+	console.log("Fichero GIA de procesado creado");
+});
 var fin=new Date().getTime();
 console.log("Tiempo total: "+(fin-inicio));
