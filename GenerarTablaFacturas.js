@@ -14,7 +14,7 @@ var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //comenzamos
 //Inicializacion de variables
-
+var textoReferencia="FACTURA ELECTRONICA POR IMPORTE DE"
 var tablaForGestDoc="";
 var inicio = new Date().getTime();
 var anio = new Date().getFullYear();
@@ -93,7 +93,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 					cif+";"
 					+";"
 					+ruta+element+";"
-					+"FACTURA POR IMPORTE DE "+tratarImporte(datos.importe)+" Euros;"
+					+textoReferencia+" "+tratarImporte(datos.importe)+" Euros;"
 					+hoy+" "+hora+"\r\n";
 			}
 		});/*
@@ -222,12 +222,14 @@ fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
     };
     console.log("Fichero de procesado creado");
 });
-fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    };
-    console.log("Fichero GIA de procesado creado");
-});
+if(!fileFacturasGestDocGIA){
+	fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		};
+		console.log("Fichero GIA de procesado creado");
+	});
+}
 var fin=new Date().getTime();
 console.log("Tiempo total: "+(fin-inicio));
