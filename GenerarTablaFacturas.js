@@ -9,7 +9,7 @@ var XmlReader = require('xml-reader');
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
- var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
+var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
 var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //comenzamos
@@ -48,6 +48,7 @@ function getHoraActual(){
  * @param cifTratado Cif del proveedor que se va a tratar. Puede ir en blanco si no se sabe qué proveedor es.
  */
 function leerArbolCompleto(rutaAbsoluta, espacios, anio, cifTratado){
+	rutaAbsoluta = rutaAbsoluta.replace(',', '.'); //Si viene con comas lo cambiamos por puntos ya que no lee bien los puntos y los está tranformado en comas.
 	var list=fs.readdirSync(rutaAbsoluta);
 	profundidad++;
 	if(profundidad==profundidadCif){
@@ -79,7 +80,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			if(ext=="xsig"){
 				datos=leerDatosXML(ruta+element);
 				var detalle=fs.statSync(ruta+element);
-				
+				//Añadimos la fecha en formato yyyymmddHHmmssmm para poder ordenar alfabéticamente y que salgan por orden de fecha
 				var name=""+detalle.mtime.getFullYear()+
 					rellenarIzq((detalle.mtime.getMonth()+1), 2, "0")+
 					rellenarIzq(detalle.mtime.getDay(), 2, "0")+
@@ -91,7 +92,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/"+name+"_"+element);
 				tablaForGestDoc+=
 					cif+";"
-					+";"
+					+datos.nomProveedor+";"
 					+ruta+element+";"
 					+textoReferencia+" "+tratarImporte(datos.importe)+" Euros;"
 					+hoy+" "+hora+"\r\n";
@@ -148,7 +149,8 @@ function leerDatosXML(ruta){
 	var datos={
 		"importe":xmlQuery(xml).find("TotalExecutableAmount").find("TotalAmount").text(),
 		"fecha":xmlQuery(xml).find("IssueDate").text(),
-		"numFactura":xmlQuery(xml).find("InvoiceNumber").text()
+		"numFactura":xmlQuery(xml).find("InvoiceNumber").text(),
+		"nomProveedor":xmlQuery(xml).find("SellerParty").find("CorporateName").text(),
 	};
 	return datos;
 	
@@ -196,12 +198,25 @@ function getHoy(){
 }
 
 //Comenzamos la lectura de los directorios
-total=0;
-leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
-var total1=totalNuevas;
-totalNuevas=0;
-leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
-var total2=totalNuevas;
+try {  
+	total=0;
+	leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
+	var total1=totalNuevas;
+	totalNuevas=0;
+	leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
+	var total2=totalNuevas;
+}catch(error) {
+	var fileError = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/ERROR.txt';
+	console.error(error);
+	fs.writeFile(fileError, error, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		};
+		console.log("Fichero de ERROR");
+	});
+  
+}
 
 console.log("Total ficheros: "+total);
 console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
