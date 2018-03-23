@@ -9,7 +9,7 @@ var XmlReader = require('xml-reader');
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
-var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
+//var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
 var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //comenzamos
@@ -175,18 +175,21 @@ function facturaProcesada(ruta, anio){
 	}
 	
 }
-/**
- * 
- * @param {*} tipo 
- * @param {*} mensaje 
- */
-function generarError(tipo, mensaje){ 
-	if(tipo==1){
-		mensaje="ERROR: "+mensaje+"\r\n";
-	}
-	var fileError="Error_"+getHoy()+".log";
 
-	fs.appendFileSync(fileError, mensaje);
+/**
+ * Genera un fichero ERROR.txt con el mensaje de error
+ * @param {Mensaje de error} error 
+ */
+function generarError(error){ 
+	var fileError = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/ERROR.txt';
+	console.error(error);
+	fs.appendFile(fileError, error, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		};
+		console.log("Fichero de ERROR");
+	});
 	
 }
 function getHoy(){
@@ -205,45 +208,43 @@ try {
 	totalNuevas=0;
 	leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
 	var total2=totalNuevas;
-}catch(error) {
-	var fileError = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/ERROR.txt';
-	console.error(error);
-	fs.writeFile(fileError, error, (err) => {
+
+
+	console.log("Total ficheros: "+total);
+	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
+	console.log("Total ficheros Nuevos "+anio+": "+total2);
+
+	fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
 		if (err) {
 			console.error(err);
+			generarError("\nLista Facturas procesadas: "+err);
 			return;
 		};
-		console.log("Fichero de ERROR");
+		console.log("Fichero de lista creado");
 	});
+
+	fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
+		if (err) {
+			console.error(err);
+			generarError("\nCSV de facturas locales: "+err);
+			return;
+		};
+		console.log("Fichero de procesado creado");
+	});
+
+	fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
+		if (err) {
+			console.error(err);
+			generarError("\nCSV de facturas en GIA: "+err);
+			return;
+		};
+		console.log("Fichero GIA de procesado creado");
+	});
+}catch(error) {
+	generarError("\nGeneral: "+error);
+	
   
 }
 
-console.log("Total ficheros: "+total);
-console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
-console.log("Total ficheros Nuevos "+anio+": "+total2);
-
-fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    };
-    console.log("Fichero de lista creado");
-});
-
-fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
-    if (err) {
-        console.error(err);
-        return;
-    };
-    console.log("Fichero de procesado creado");
-});
-
-fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
-	if (err) {
-		console.error(err);
-		return;
-	};
-	console.log("Fichero GIA de procesado creado");
-});
 var fin=new Date().getTime();
 console.log("Tiempo total: "+(fin-inicio));
