@@ -5,12 +5,15 @@ var jsonfile = require('jsonfile');
 var xmlQuery = require('xml-query');
 var XmlReader = require('xml-reader');
 
-//Rutas de los ficheros
+//Rutas de los fichero
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
 var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
 var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
+
+//Array para ficheros
+var arrayFacturas=new Array();
 
 //comenzamos
 //Inicializacion de variables
@@ -90,26 +93,18 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 					rellenarIzq(detalle.mtime.getMilliseconds(), 3, "0");
 
 				fs.copyFileSync(ruta+element, rutaFacturasCopias+"/"+name+"_"+element);
-				tablaForGestDoc+=
-					cif+";"
-					+datos.nomProveedor+";"
-					+ruta+element+";"
-					+textoReferencia+" "+tratarImporte(datos.importe)+" Euros;"
-					+hoy+" "+hora+"\r\n";
+				arrayFacturas.push({
+					"cif":cif,
+					"nombre":datos.nomProveedor,
+					"ruta":ruta+element,
+					"referencia":tratarImporte(datos.importe)+" Euros;",
+					"orden":name
+				});
 			}
-		});/*
-		dirATratar.forEach(element => {
-			tablaForGestDoc+=
-				cif+";"
-				+";"
-				+ruta+element+";"
-				+datos.numFactura+";"
-				+datos.fecha+";"
-				+datos.importe+";"
-				+hoy+" "+hora+"\r\n";
-		});*/
+		});
 	}
 }
+
 /**
  * 
  * @param {Numero que se quiere rellenar por la izquierda} num 
@@ -208,8 +203,21 @@ try {
 	totalNuevas=0;
 	leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
 	var total2=totalNuevas;
+	//Ordenamos el array
+	arrayFacturas.sort(function(a,b){
+		return a.orden-b.orden;
+	});
 
+	arrayFacturas.forEach(element => {
+		tablaForGestDoc+=
+			element.cif+";"+
+			element.nombre+";"+
+			element.ruta+";"+
+			element.referencia+";"+
+			hoy+" "+hora+"\r\n";
+	});
 
+	
 	console.log("Total ficheros: "+total);
 	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
 	console.log("Total ficheros Nuevos "+anio+": "+total2);
@@ -229,7 +237,7 @@ try {
 			generarError("\nCSV de facturas locales: "+err);
 			return;
 		};
-		console.log("Fichero de procesado creado");
+		console.log("Fichero de procesado local creado");
 	});
 
 	fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
