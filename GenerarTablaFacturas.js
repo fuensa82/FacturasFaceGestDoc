@@ -198,7 +198,7 @@ function getHoy(){
 //Comenzamos la lectura de los directorios
 try {  
 	total=0;
-	//leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
+	leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
 	var total1=totalNuevas;
 	totalNuevas=0;
 	leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
