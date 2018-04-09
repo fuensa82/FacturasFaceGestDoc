@@ -97,7 +97,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 					"cif":cif,
 					"nombre":datos.nomProveedor,
 					"ruta":ruta+element,
-					"referencia":tratarImporte(datos.importe)+" Euros;",
+					"referencia":"FACTURA ELECTRONICA POR IMPORTE DE "+tratarImporte(datos.importe)+" Euros",
 					"orden":name
 				});
 			}
@@ -198,7 +198,7 @@ function getHoy(){
 //Comenzamos la lectura de los directorios
 try {  
 	total=0;
-	leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
+	//leerArbolCompleto(rutaAbsoluta+"/"+anioAnt,"", anioAnt,"");
 	var total1=totalNuevas;
 	totalNuevas=0;
 	leerArbolCompleto(rutaAbsoluta+"/"+anio,"",anio,"");
