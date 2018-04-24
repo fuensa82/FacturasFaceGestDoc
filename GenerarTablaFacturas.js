@@ -233,17 +233,7 @@ try {
 	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
 	console.log("Total ficheros Nuevos "+anio+": "+total2);
 
-	/**
-	 * Se guarda la lista de facturas procesadas para no volver a procesarlas
-	 */
-	fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
-		if (err) {
-			console.error(err);
-			generarError("\nLista Facturas procesadas: "+err);
-			return;
-		};
-		console.log("Fichero de lista creado");
-	});
+	
 
 	fs.appendFile(fileFacturasGestDoc, tablaForGestDoc, (err) => {
 		if (err) {
@@ -261,6 +251,19 @@ try {
 			return;
 		};
 		console.log("Fichero GIA de procesado creado");
+	});
+
+	/**
+	 * Se guarda la lista de facturas procesadas para no volver a procesarlas. Se hace despues de que los
+	 * CSV se hayan creado correctamente ya que es el paso más delicado.
+	 */
+	fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
+		if (err) {
+			console.error(err);
+			generarError("\nLista Facturas procesadas: "+err);
+			return;
+		};
+		console.log("Fichero de lista creado");
 	});
 }catch(error) {
 	generarError("\nGeneral: "+error);
