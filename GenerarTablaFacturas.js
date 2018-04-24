@@ -178,6 +178,17 @@ function facturaProcesada(ruta, anio){
 function generarError(error){ 
 	var fileError = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/ERROR.txt';
 	console.error(error);
+	/**
+	 * Añadimos la traza de cuantas facturas se han procesado antes del error.
+	 */
+	console.log("*****ERROR******");
+	console.log("Total ficheros: "+total);
+	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
+	console.log("Total ficheros Nuevos "+anio+": "+total2);
+	error+="Total ficheros: "+total+"\n"+
+		"Total ficheros Nuevos "+anioAnt+": "+total1+
+		"Total ficheros Nuevos "+anio+": "+total2;
+
 	fs.appendFile(fileError, error, (err) => {
 		if (err) {
 			console.error(err);
@@ -222,6 +233,9 @@ try {
 	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
 	console.log("Total ficheros Nuevos "+anio+": "+total2);
 
+	/**
+	 * Se guarda la lista de facturas procesadas para no volver a procesarlas
+	 */
 	fs.writeFile(fileFacturasProcesadas, JSON.stringify(listaFacturasProcesadas, null,3), (err) => {
 		if (err) {
 			console.error(err);
