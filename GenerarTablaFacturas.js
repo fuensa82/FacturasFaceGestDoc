@@ -6,7 +6,7 @@ var xmlQuery = require('xml-query');
 var XmlReader = require('xml-reader');
 
 //Rutas de los fichero
-var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h';
+var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h'; 
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
 var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
