@@ -4,12 +4,14 @@ var _ = require("underscore");
 var jsonfile = require('jsonfile');
 var xmlQuery = require('xml-query');
 var XmlReader = require('xml-reader');
+const { exit } = require("process");
 
 //Rutas de los fichero
 var rutaAbsoluta='//sev5-fuensalida/GIA/bdremota/FACE/p4506600h'; 
 var fileFacturasProcesadas = 'FacturasProcesadas/facturas.json';
 var fileFacturasGestDoc = 'FacturasProcesadas/facturasGesDoc.csv';
 var fileFacturasGestDocGIA = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDoc.csv';
+var fileFacturasGestDocGIAerror = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc/csv/facturasGesDocAlt.csv';
 var rutaFacturasCopias = '//sev5-fuensalida/GIA/FacturasCopiasParaGestDoc';
 
 //Array para ficheros
@@ -28,7 +30,15 @@ var total=0; //Número de facturas encontradas
 var totalNuevas=0;
 var hoy=getHoy();
 var hora=getHoraActual();
-var listaFacturasProcesadas=jsonfile.readFileSync(fileFacturasProcesadas);
+
+var listaFacturasProcesadas;
+try{
+	listaFacturasProcesadas=jsonfile.readFileSync(__dirname+"\\"+fileFacturasProcesadas);
+}catch(err){
+	console.log("Error: "+err);
+	exit(0);
+}
+	
 
 /**
  * Calcula la hora en formato bonito
@@ -229,9 +239,9 @@ try {
 	});
 
 	
-	console.log("Total ficheros: "+total);
-	console.log("Total ficheros Nuevos "+anioAnt+": "+total1);
-	console.log("Total ficheros Nuevos "+anio+": "+total2);
+	console.log("\nTotal ficheros: "+total);
+	console.log("\nTotal ficheros Nuevos "+anioAnt+": "+total1);
+	console.log("\nTotal ficheros Nuevos "+anio+": "+total2);
 
 	
 
@@ -241,16 +251,21 @@ try {
 			generarError("\nCSV de facturas locales: "+err);
 			return;
 		};
-		console.log("Fichero de procesado local creado");
+		console.log("\nFichero de procesado local creado");
 	});
 
 	fs.appendFile(fileFacturasGestDocGIA, tablaForGestDoc, (err) => {
 		if (err) {
 			console.error(err);
 			generarError("\nCSV de facturas en GIA: "+err);
+			fs.appendFile(fileFacturasGestDocGIAerror, tablaForGestDoc,(err)=>{
+				if(err){
+					console.log("\nError al escribir en fichero GIA alternativo");
+				}
+			});
 			return;
 		};
-		console.log("Fichero GIA de procesado creado");
+		console.log("\nFichero GIA de procesado creado");
 	});
 
 	/**
