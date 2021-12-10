@@ -92,6 +92,7 @@ function tartarFicheros(ruta,dirATratar, anio, cif){
 			var ext=element.split(".")[element.split(".").length-1];
 			if(ext=="xsig"){
 				datos=leerDatosXML(ruta+element);
+				grabaDatosFacturasProcesadasJSON(ruta, anio, datos);
 				var detalle=fs.statSync(ruta+element);
 				//Añadimos la fecha en formato yyyymmddHHmmssmm para poder ordenar alfabéticamente y que salgan por orden de fecha
 				var name=""+detalle.mtime.getFullYear()+
@@ -178,7 +179,16 @@ function facturaProcesada(ruta, anio){
 	}else{
 		return true;
 	}
-	
+}
+
+/**
+ * Funcion que se ejecuta al leer una factura y graba en el fichero de datos procesados el importe de la factura
+ * @param {*} ruta 
+ * @param {*} anio 
+ * @param {*} datos 
+ */
+function grabaDatosFacturasProcesadasJSON(ruta, anio, datos){
+	listaFacturasProcesadas.facturasFace[anioN][ruta]=hoy+" "+hora+" "+datos.nomProveedor+" "+datos.importe;
 }
 
 /**
